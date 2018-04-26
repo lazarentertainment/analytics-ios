@@ -163,7 +163,8 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
                                                                  anonymousId:anonymousId
                                                                       traits:SEGCoerceDictionary(traits)
                                                                      context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                                integrations:[options objectForKey:@"integrations"]];
+                                                                integrations:[options objectForKey:@"integrations"]
+																  exclusions:[options objectForKey:@"exclusions"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"identify:")
                              arguments:@[ payload ]
@@ -180,7 +181,8 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
     SEGTrackPayload *payload = [[SEGTrackPayload alloc] initWithEvent:event
                                                            properties:SEGCoerceDictionary(properties)
                                                               context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                         integrations:[options objectForKey:@"integrations"]];
+														 integrations:[options objectForKey:@"integrations"]
+														   exclusions:[options objectForKey:@"exclusions"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"track:")
                              arguments:@[ payload ]
@@ -197,7 +199,8 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
     SEGScreenPayload *payload = [[SEGScreenPayload alloc] initWithName:screenTitle
                                                             properties:SEGCoerceDictionary(properties)
                                                                context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                          integrations:[options objectForKey:@"integrations"]];
+														  integrations:[options objectForKey:@"integrations"]
+															exclusions:[options objectForKey:@"exclusions"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"screen:")
                              arguments:@[ payload ]
@@ -212,7 +215,8 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
     SEGGroupPayload *payload = [[SEGGroupPayload alloc] initWithGroupId:groupId
                                                                  traits:SEGCoerceDictionary(traits)
                                                                 context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                           integrations:[options objectForKey:@"integrations"]];
+														   integrations:[options objectForKey:@"integrations"]
+															 exclusions:[options objectForKey:@"exclusions"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"group:")
                              arguments:@[ payload ]
@@ -226,7 +230,8 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
 {
     SEGAliasPayload *payload = [[SEGAliasPayload alloc] initWithNewId:newId
                                                               context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                         integrations:[options objectForKey:@"integrations"]];
+														 integrations:[options objectForKey:@"integrations"]
+														   exclusions:[options objectForKey:@"exclusions"]];
 
     [self callIntegrationsWithSelector:NSSelectorFromString(@"alias:")
                              arguments:@[ payload ]
@@ -527,7 +532,8 @@ static NSString *const kSEGAnonymousIdFilename = @"segment.anonymousId";
 {
     return @{
         @"context" : self.context ?: @{},
-        @"integrations" : self.integrations ?: @{}
+        @"integrations" : self.integrations ?: @{},
+		@"exclusions" : self.exclusions ?: @{}
     };
 }
 

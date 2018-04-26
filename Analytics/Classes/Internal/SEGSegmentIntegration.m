@@ -337,7 +337,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [dictionary setValue:payload.traits forKey:@"traits"];
 
-    [self enqueueAction:@"identify" dictionary:dictionary context:payload.context integrations:payload.integrations];
+    [self enqueueAction:@"identify" dictionary:dictionary context:payload.context integrations:payload.integrations exclusions:payload.exclusions];
 }
 
 - (void)track:(SEGTrackPayload *)payload
@@ -347,7 +347,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [dictionary setValue:payload.event forKey:@"event"];
     [dictionary setValue:payload.properties forKey:@"properties"];
-    [self enqueueAction:@"track" dictionary:dictionary context:payload.context integrations:payload.integrations];
+    [self enqueueAction:@"track" dictionary:dictionary context:payload.context integrations:payload.integrations exclusions:payload.exclusions];
 }
 
 - (void)screen:(SEGScreenPayload *)payload
@@ -356,7 +356,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     [dictionary setValue:payload.name forKey:@"name"];
     [dictionary setValue:payload.properties forKey:@"properties"];
 
-    [self enqueueAction:@"screen" dictionary:dictionary context:payload.context integrations:payload.integrations];
+    [self enqueueAction:@"screen" dictionary:dictionary context:payload.context integrations:payload.integrations exclusions:payload.exclusions];
 }
 
 - (void)group:(SEGGroupPayload *)payload
@@ -365,7 +365,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     [dictionary setValue:payload.groupId forKey:@"groupId"];
     [dictionary setValue:payload.traits forKey:@"traits"];
 
-    [self enqueueAction:@"group" dictionary:dictionary context:payload.context integrations:payload.integrations];
+    [self enqueueAction:@"group" dictionary:dictionary context:payload.context integrations:payload.integrations exclusions:payload.exclusions];
 }
 
 - (void)alias:(SEGAliasPayload *)payload
@@ -374,7 +374,7 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     [dictionary setValue:payload.theNewId forKey:@"userId"];
     [dictionary setValue:self.userId ?: [self.analytics getAnonymousId] forKey:@"previousId"];
 
-    [self enqueueAction:@"alias" dictionary:dictionary context:payload.context integrations:payload.integrations];
+    [self enqueueAction:@"alias" dictionary:dictionary context:payload.context integrations:payload.integrations exclusions:payload.exclusions];
 }
 
 - (void)registeredForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -424,7 +424,33 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
     return [dict copy];
 }
 
-- (void)enqueueAction:(NSString *)action dictionary:(NSMutableDictionary *)payload context:(NSDictionary *)context integrations:(NSDictionary *)integrations
+- (BOOL) isExcluded:(NSDictionary *)exclusions key:(NSString *)key
+{
+	NSParameterAssert(exclusions != nil);
+	NSParameterAssert(key != nil);
+
+	id value = exclusions[key];
+	if (value == nil) return FALSE;
+//	if (![[value class] isKindOfClass:[NSNumber class]]) return FALSE;
+
+	return ((NSNumber *)value).boolValue;
+}
+
+- (void) checkExclusion:(NSDictionary *)exclusions key:(NSString *)key cached:(NSDictionary *)cachedContext static:(NSMutableDictionary *)staticContext
+{
+	NSParameterAssert(exclusions != nil);
+	NSParameterAssert(key != nil);
+	NSParameterAssert(cachedContext != nil);
+	NSParameterAssert(staticContext != nil);
+
+	if ([self isExcluded:exclusions key:key]) return;
+
+	// not excluded, so put it back in
+	staticContext[key] = cachedContext[key];
+}
+
+
+- (void)enqueueAction:(NSString *)action dictionary:(NSMutableDictionary *)payload context:(NSDictionary *)context integrations:(NSDictionary *)integrations exclusions:(NSDictionary *)exclusions
 {
     // attach these parts of the payload outside since they are all synchronous
     // and the timestamp will be more accurate.
@@ -444,12 +470,27 @@ static CTTelephonyNetworkInfo *_telephonyNetworkInfo;
 
         [payload setValue:[self integrationsDictionary:integrations] forKey:@"integrations"];
 
-        NSDictionary *staticContext = self.cachedStaticContext;
+		NSDictionary *cachedContext = self.cachedStaticContext;
+		NSMutableDictionary *staticContext = [[NSMutableDictionary alloc] init];
+		if (exclusions.count > 0) {
+			// always add the library since it seems to be key on the back-end
+			staticContext[@"library"] = cachedContext[@"library"];
+			// check the others
+			if (![self isExcluded:exclusions key:@"all"]) {
+				[self checkExclusion:exclusions key:@"app" cached:cachedContext static:staticContext];
+				[self checkExclusion:exclusions key:@"device" cached:cachedContext static:staticContext];
+				[self checkExclusion:exclusions key:@"os" cached:cachedContext static:staticContext];
+				[self checkExclusion:exclusions key:@"screen" cached:cachedContext static:staticContext];
+			}
+		} else {
+			[staticContext addEntriesFromDictionary:cachedContext];
+		}
+
         NSDictionary *liveContext = [self liveContext];
         NSDictionary *customContext = context;
         NSMutableDictionary *context = [NSMutableDictionary dictionaryWithCapacity:staticContext.count + liveContext.count + customContext.count];
-        [context addEntriesFromDictionary:staticContext];
-        [context addEntriesFromDictionary:liveContext];
+		[context addEntriesFromDictionary:staticContext];
+		[context addEntriesFromDictionary:liveContext];
         [context addEntriesFromDictionary:customContext];
         [payload setValue:[context copy] forKey:@"context"];
 
