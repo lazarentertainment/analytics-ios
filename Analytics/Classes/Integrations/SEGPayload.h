@@ -8,8 +8,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) JSON_DICT context;
 @property (nonatomic, readonly) JSON_DICT integrations;
+@property (nonatomic, readonly) JSON_DICT exclusions;
 
 - (instancetype)initWithContext:(JSON_DICT)context integrations:(JSON_DICT)integrations;
+- (instancetype)initWithContext:(JSON_DICT)context integrations:(JSON_DICT)integrations exclusions:(JSON_DICT)exclusions;
 
 @end
 

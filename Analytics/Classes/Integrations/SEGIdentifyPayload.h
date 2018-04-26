@@ -16,7 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
                    anonymousId:(NSString *_Nullable)anonymousId
                         traits:(JSON_DICT _Nullable)traits
                        context:(JSON_DICT)context
-                  integrations:(JSON_DICT)integrations;
+				  integrations:(NSDictionary *)integrations
+					exclusions:(NSDictionary *)exclusions;
 
 @end
 

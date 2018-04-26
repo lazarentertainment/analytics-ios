@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithEvent:(NSString *)event
                    properties:(NSDictionary *_Nullable)properties
                       context:(NSDictionary *)context
-                 integrations:(NSDictionary *)integrations;
+				 integrations:(NSDictionary *)integrations
+				   exclusions:(NSDictionary *)exclusions;
 
 @end
 

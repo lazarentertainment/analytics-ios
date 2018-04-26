@@ -13,7 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGroupId:(NSString *)groupId
                          traits:(JSON_DICT _Nullable)traits
                         context:(JSON_DICT)context
-                   integrations:(JSON_DICT)integrations;
+				   integrations:(NSDictionary *)integrations
+					 exclusions:(NSDictionary *)exclusions;
 
 @end
 

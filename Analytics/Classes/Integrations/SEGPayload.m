@@ -12,6 +12,16 @@
     return self;
 }
 
+- (instancetype)initWithContext:(JSON_DICT)context integrations:(JSON_DICT)integrations exclusions:(JSON_DICT)exclusions
+{
+	if (self = [super init]) {
+		_context = [context copy];
+		_integrations = [integrations copy];
+		_exclusions = [exclusions copy];
+	}
+	return self;
+}
+
 @end
 
 

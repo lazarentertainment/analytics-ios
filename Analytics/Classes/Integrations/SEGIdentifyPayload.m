@@ -8,8 +8,9 @@
                         traits:(NSDictionary *)traits
                        context:(NSDictionary *)context
                   integrations:(NSDictionary *)integrations
+					exclusions:(NSDictionary *)exclusions
 {
-    if (self = [super initWithContext:context integrations:integrations]) {
+	if (self = [super initWithContext:context integrations:integrations exclusions:exclusions]) {
         _userId = [userId copy];
         _anonymousId = [anonymousId copy];
         _traits = [traits copy];
