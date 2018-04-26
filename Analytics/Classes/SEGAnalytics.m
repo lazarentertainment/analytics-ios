@@ -203,7 +203,8 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
                                                                       anonymousId:nil
                                                                            traits:SEGCoerceDictionary(traits)
                                                                           context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                                     integrations:[options objectForKey:@"integrations"]]];
+                                                                     integrations:[options objectForKey:@"integrations"]
+																	   exclusions:[options objectForKey:@"exclusions"]]];
 }
 
 #pragma mark - Track
@@ -225,7 +226,8 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
                                     [[SEGTrackPayload alloc] initWithEvent:event
                                                                 properties:SEGCoerceDictionary(properties)
                                                                    context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                              integrations:[options objectForKey:@"integrations"]]];
+															  integrations:[options objectForKey:@"integrations"]
+																exclusions:[options objectForKey:@"exclusions"]]];
 }
 
 #pragma mark - Screen
@@ -248,7 +250,8 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
                                      [[SEGScreenPayload alloc] initWithName:screenTitle
                                                                  properties:SEGCoerceDictionary(properties)
                                                                     context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                               integrations:[options objectForKey:@"integrations"]]];
+															   integrations:[options objectForKey:@"integrations"]
+																 exclusions:[options objectForKey:@"exclusions"]]];
 }
 
 #pragma mark - Group
@@ -269,7 +272,8 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
                                     [[SEGGroupPayload alloc] initWithGroupId:groupId
                                                                       traits:SEGCoerceDictionary(traits)
                                                                      context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                                integrations:[options objectForKey:@"integrations"]]];
+																integrations:[options objectForKey:@"integrations"]
+																  exclusions:[options objectForKey:@"exclusions"]]];
 }
 
 #pragma mark - Alias
@@ -284,7 +288,8 @@ NSString *const SEGBuildKeyV2 = @"SEGBuildKeyV2";
     [self run:SEGEventTypeAlias payload:
                                     [[SEGAliasPayload alloc] initWithNewId:newId
                                                                    context:SEGCoerceDictionary([options objectForKey:@"context"])
-                                                              integrations:[options objectForKey:@"integrations"]]];
+															  integrations:[options objectForKey:@"integrations"]
+																exclusions:[options objectForKey:@"exclusions"]]];
 }
 
 - (void)trackPushNotification:(NSDictionary *)properties fromLaunch:(BOOL)launch
